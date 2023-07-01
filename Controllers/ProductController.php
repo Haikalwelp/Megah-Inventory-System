@@ -1,7 +1,6 @@
 <?php
 require_once "../config/autoload.php";
 
-
 class ProductController extends Product
 {
     public function getProductsController()
@@ -14,9 +13,9 @@ class ProductController extends Product
         return $this->deleteProducts($productIds);
     }
 
-    public function editProductController($productId, $name, $category, $sellingPrice, $balance, $productPhoto)
+    public function editProductController($oldProductId, $newProductId, $name, $category, $sellingPrice, $balance, $productPhoto)
     {
-        return $this->editProduct($productId, $name, $category, $sellingPrice, $balance, $productPhoto);
+        return $this->editProduct($oldProductId, $newProductId, $name, $category, $sellingPrice, $balance, $productPhoto);
     }
 
     public function addProductController($productData)
@@ -33,10 +32,10 @@ class ProductController extends Product
     {
         return $this->getProductById($productId);
     }
+
+    public function getProductIdBySupplierIDController($supplierID)
+    {
+        return $this->getProductIdBySupplierID($supplierID);
+    }
 }
-
-
-
-
-
 ?>

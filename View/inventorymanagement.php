@@ -40,6 +40,7 @@
 
             if ($result) {
                 // Deletion successful
+                $success = true;
             } else {
                 // Deletion failed
                 $error = true;
@@ -56,6 +57,7 @@
         $productController = new ProductController();
         // Retrieve form data
         $productData = array(
+            'productid' => $_POST['productid'],
             'product_name' => $_POST['product_name'],
             'product_code' => $_POST['product_code'],
             'type' => $_POST['type'],
@@ -86,16 +88,17 @@
     if (isset($_POST['edit'])) {
         $productController = new ProductController();
         // Retrieve form data
-        $productId = $_POST['productId'];
+        $oldProductId = $_POST['editOldProductId'];
+        $newProductId = $_POST['editNewProductId'];
         $name = $_POST['editProductName'];
         $category = $_POST['editProductCategory'];
         $sellingPrice = $_POST['editProductSelling'];
         $balance = $_POST['editProductBalance'];
         $productPhoto = $_FILES['editProductPhoto'];
-    
+
         // Edit the product
-        $result = $productController->editProductController($productId, $name, $category, $sellingPrice, $balance, $productPhoto);
-    
+        $result = $productController->editProductController($oldProductId, $newProductId, $name, $category, $sellingPrice, $balance, $productPhoto);
+
         if ($result) {
             // Product edited successfully
             echo "Product edited successfully!";
@@ -104,7 +107,8 @@
             echo "Error: Failed to edit the product.";
         }
     }
-    
+
+
 
     ?>
 
@@ -114,14 +118,24 @@
         <?php
         if ($error == true) {
             echo '
-                    <div class="alert alert-danger w-100" role="alert">
-                        Action unsuccessful
-                    </div>';
+            <div class="alert alert-success w-100" role="alert">
+            Action successful (Refreshing this page in 2 seconds)
+        </div>';
+        echo '<script>
+        setTimeout(function() {
+            window.location.href = "inventorymanagement.php";
+        }, 2000); // 2000 milliseconds = 2 seconds
+    </script>';
         } elseif ($success == true) {
             echo '
                     <div class="alert alert-success w-100" role="alert">
                         Action successful (Refreshing this page in 2 seconds)
                     </div>';
+                    echo '<script>
+        setTimeout(function() {
+            window.location.href = "inventorymanagement.php";
+        }, 2000); // 2000 milliseconds = 2 seconds
+    </script>';
         } elseif ($nothing == true) {
             echo '
                     <div class="alert alert-warning w-100" role="alert">
@@ -145,6 +159,7 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
+                                <th scope="col">Product ID</th>
                                 <th scope="col">Category</th>
                                 <th scope="col">Selling Price</th>
                                 <th scope="col">Balance</th>
@@ -168,6 +183,7 @@
                                 echo '<tr>';
                                 echo '<th scope="row">' . $rowNumber . '</th>';
                                 echo '<td>' . $product['product_name'] . '</td>';
+                                echo '<td>' . $product['productid'] . '</td>';
                                 echo '<td>' . $product['category'] . '</td>';
                                 echo '<td>' . $product['selling'] . '</td>';
                                 echo '<td>' . $product['balance'] . '</td>';
@@ -175,7 +191,7 @@
                                 echo '<input type="checkbox" name="selectedProduct[]" value="' . $product['productid'] . '">';
                                 echo '</td>';
                                 echo '<td>';
-                                echo '<a href="#" data-bs-toggle="modal" data-bs-target="#editModal" data-product-id="' . $product['productid'] . '" data-product-name="' . $product['product_name'] . '" data-product-category="' . $product['category'] . '" data-product-selling="' . $product['selling'] . '" data-product-balance="' . $product['balance'] . '" data-product-photo="' . $product['productphoto'] . '">Edit</a>';
+                                echo '<a href="#" data-bs-toggle="modal" data-bs-target="#editModal" data-old-product-id="' . $product['productid'] . '" data-product-id="' . $product['productid'] . '" data-product-name="' . $product['product_name'] . '" data-product-category="' . $product['category'] . '" data-product-selling="' . $product['selling'] . '" data-product-balance="' . $product['balance'] . '" data-product-photo="' . $product['productphoto'] . '">Edit</a>';
                                 echo '</td>';
                                 echo '</tr>';
                                 $rowNumber++;
@@ -211,7 +227,9 @@
                             </div>
                             <div class="modal-body">
                                 <form method="POST" enctype="multipart/form-data" id="editProductForm">
-                                    <input type="hidden" id="editProductId" name="productId">
+                                    <input type="hidden" id="editOldProductId" name="editOldProductId">
+                                    <input type="hidden" id="editNewProductId" name="editNewProductId">
+
                                     <div class="mb-3">
                                         <label for="editProductName" class="form-label">Product Name</label>
                                         <input type="text" class="form-control" id="editProductName" name="editProductName">
@@ -236,7 +254,12 @@
                                         <label for="editProductPhoto" class="form-label">New Product Photo</label>
                                         <input type="file" class="form-control" id="editProductPhoto" name="editProductPhoto">
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="editNewProductId" class="form-label">New Product ID</label>
+                                        <input type="text" class="form-control" id="editNewProductId" name="editNewProductId">
+                                    </div>
                                     <button type="submit" class="btn btn-primary" name="edit">Edit</button>
+
                                 </form>
                             </div>
                         </div>
@@ -250,7 +273,8 @@
 
                         editModal.addEventListener('show.bs.modal', function(event) {
                             var button = event.relatedTarget;
-                            var productId = button.getAttribute('data-product-id');
+                            var oldProductId = button.getAttribute('data-product-id');
+                            var newProductId = button.getAttribute('data-product-id'); // You can modify this value based on your requirements
                             var productName = button.getAttribute('data-product-name');
                             var productCategory = button.getAttribute('data-product-category');
                             var productSelling = button.getAttribute('data-product-selling');
@@ -258,7 +282,8 @@
                             var productPhoto = button.getAttribute('data-product-photo');
 
                             var editForm = document.getElementById('editProductForm');
-                            var editProductId = editForm.querySelector('#editProductId');
+                            var editOldProductId = editForm.querySelector('#editOldProductId');
+                            var editNewProductId = editForm.querySelector('#editNewProductId');
                             var editProductName = editForm.querySelector('#editProductName');
                             var editProductCategory = editForm.querySelector('#editProductCategory');
                             var editProductSelling = editForm.querySelector('#editProductSelling');
@@ -266,7 +291,8 @@
                             var currentProductPhoto = editForm.querySelector('#currentProductPhoto');
 
                             // Set the values in the form fields
-                            editProductId.value = productId;
+                            editOldProductId.value = oldProductId;
+                            editNewProductId.value = newProductId;
                             editProductName.value = productName;
                             editProductCategory.value = productCategory;
                             editProductSelling.value = productSelling;
@@ -275,6 +301,7 @@
                         });
                     });
                 </script>
+
 
 
 
@@ -291,6 +318,10 @@
 
                             <div class="modal-body">
                                 <form action="" method="post" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                        <label for="productid" class="col-form-label">ID:</label>
+                                        <input type="text" class="form-control" name="productid" id="productid">
+                                    </div>
                                     <div class="mb-3">
                                         <label for="product_name" class="col-form-label">Product:</label>
                                         <input type="text" class="form-control" name="product_name" id="product_name">
