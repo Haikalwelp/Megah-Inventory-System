@@ -1,2 +1,2 @@
-# DBProject
-Database Project for Group 17 BIT20803
+# WDProject
+Web Development Project
