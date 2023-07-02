@@ -54,7 +54,7 @@ if (isset($_POST['Login'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Megah Holdings - User Login</title>
+    <title>Megah Holdings - Customer Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 </head>
@@ -66,7 +66,7 @@ if (isset($_POST['Login'])) {
         <div class="card px-5 w-50">
             <div class="card-body">
                 <div class="mt-3">
-                    <h1>Welcome to Megah Holdings - User Login</h1>
+                    <h1>Welcome to Megah Holdings - Customer Login</h1>
                 </div>
                 <div class="mt-3 mb-4">
                     <h3>Login to Access Your Account</h3>
